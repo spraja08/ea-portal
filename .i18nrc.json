@@ -1,0 +1,10 @@
+{
+    "prefix": "eaPortal",
+    "paths": {
+      "eaPortal": "."
+    },
+    "translations": [
+      "translations/ja-JP.json"
+    ]
+  }
+  

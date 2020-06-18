@@ -1,0 +1,50 @@
+{
+  "optimizerCacheKey": {
+    "lastCommit": "7df868b3004af68ddb4e6fe38440c329d526e9e4",
+    "bootstrap": "# this is only human readable for debugging, please don't try to parse this\n@kbn/babel-preset:d46ee7ad4e2540040c6d6838278506583aefc394\n@kbn/dev-utils:844238146ea73bee9c4c0c717ee1bd2513b1e474\n@kbn/expect:d8f5076701581dd9ba3805eb0f1f37adc576c179\n@kbn/i18n:36dd0465abcf2cf2be051ffd9fd16a6cff65efd8\n@kbn/optimizer:0d36de1e08c39f3ed2f313399d672f0620c60e4a\n@kbn/ui-shared-deps:6a7ea5ad3e8b18c2afaefa9c5706908c32d0d7e9",
+    "deletedPaths": [],
+    "modifiedTimes": {},
+    "workerConfig": {
+      "cache": true,
+      "dist": false,
+      "repoRoot": "/Users/rspamzn/cloudLabs/dependencies/kibana",
+      "optimizerCacheKey": "♻",
+      "browserslistEnv": "dev"
+    }
+  },
+  "cacheKey": {
+    "spec": {
+      "type": "plugin",
+      "id": "eaPortal",
+      "entry": "./public/index",
+      "contextDir": "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal",
+      "sourceRoot": "/Users/rspamzn/cloudLabs/dependencies/kibana",
+      "outputDir": "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/target/public"
+    },
+    "mtimes": {
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/node_modules/css-loader/package.json": 1592054937739,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/node_modules/style-loader/package.json": 1592054937855,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/common/index.ts": 1592207724557.1611,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/application.tsx": 1592207731452.7236,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/components/ADPs.js": 1592505626520.3855,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/components/app.tsx": 1592483229273.1624,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/index.scss": 1592207724555.6672,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/index.ts": 1592207731453.2227,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/plugin.ts": 1592207731453.411,
+      "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/types.ts": 1592207731453.5986
+    }
+  },
+  "moduleCount": 14,
+  "files": [
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/node_modules/css-loader/package.json",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/node_modules/style-loader/package.json",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/common/index.ts",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/application.tsx",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/components/ADPs.js",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/components/app.tsx",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/index.scss",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/index.ts",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/plugin.ts",
+    "/Users/rspamzn/cloudLabs/dependencies/kibana/plugins/ea_portal/public/types.ts"
+  ]
+}
