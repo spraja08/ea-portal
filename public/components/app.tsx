@@ -22,6 +22,11 @@ import { i18n } from '@kbn/i18n';
 import { FormattedMessage, I18nProvider } from '@kbn/i18n/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import ADPs from './ADPs';
+import Entities from './Entities';
+import States from './States';
+import Events from './Events';
+import Simulator from './Simulator';
+
 
 import {
   EuiPage,
@@ -30,9 +35,6 @@ import {
   EuiPageContentBody,
   EuiPageContentHeader,
   EuiPageContentHeaderSection,
-  EuiPageHeader,
-  EuiPageHeaderSection,
-  EuiPageSideBar,
   EuiTitle,
   EuiIcon,
   EuiSpacer,
@@ -84,16 +86,7 @@ export const EaPortalApp = ({ basename, notifications, http, navigation }: EaPor
       content: (
         <Fragment>
           <EuiSpacer />
-          <EuiTitle>
-            <h3>Cobalt</h3>
-          </EuiTitle>
-          <EuiText>
-            Cobalt is a chemical element with symbol Co and atomic number 27.
-            Like nickel, cobalt is found in the Earth&rsquo;s crust only in
-            chemically combined form, save for small deposits found in alloys of
-            natural meteoric iron. The free element, produced by reductive
-            smelting, is a hard, lustrous, silver-gray metal.
-          </EuiText>
+          <Events />
         </Fragment>
       ),
     },
@@ -108,12 +101,7 @@ export const EaPortalApp = ({ basename, notifications, http, navigation }: EaPor
       content: (
         <Fragment>
           <EuiSpacer />
-          <EuiTitle>
-            <h3>Entities</h3>
-          </EuiTitle>
-          <EuiText>
-            Entities could be people or airlines or any real world object that we want to collect insights about...
-          </EuiText>
+          <Entities />
         </Fragment>
       ),
     },
@@ -143,16 +131,22 @@ export const EaPortalApp = ({ basename, notifications, http, navigation }: EaPor
       content: (
         <Fragment>
           <EuiSpacer />
-          <EuiTitle>
-            <h3>Monosodium Glutamate</h3>
-          </EuiTitle>
-          <EuiText>
-            Monosodium glutamate (MSG, also known as sodium glutamate) is the
-            sodium salt of glutamic acid, one of the most abundant naturally
-            occurring non-essential amino acids. Monosodium glutamate is found
-            naturally in tomatoes, cheese and other foods.
-          </EuiText>
+          <States />
         </Fragment>
+      ),
+    },
+    {
+      id: 'generator',
+      name: (
+        <span>
+          <EuiIcon type="menuRight" />
+          &nbsp;GENERATE EVENTS
+        </span>
+      ), content: (
+        <Fragment>
+          <EuiSpacer />
+          <Simulator />
+      </Fragment>
       ),
     },
     {

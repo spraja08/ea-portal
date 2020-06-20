@@ -17,7 +17,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
         return (
             <EuiFlexItem style={{ width: 300 }} grow={false} key={index}>
                 <EuiCard
-                    icon={<EuiIcon size="xl" type="usersRolesApp" />}
+                    icon={<EuiIcon size="xl" type="tag" />}
                     title={buildingBlocks[key]['name']}
                     description={buildingBlocks[key]['description']}
                     betaBadgeLabel={buildingBlocks[key]['entity']}
@@ -30,8 +30,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
 }
 
 function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description,
-    events, entity, expressionType, expressionTypesList, handleExpressionTypeSelection, expression, entitiesList, eventsList,
-    handleEntitySelection, handleEventSelection) {
+                entity, expression, entitiesList, handleEntitySelection ) {
     let flyout;
     if (isFlyoutVisible) {
         flyout = (
@@ -53,23 +52,11 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                     <EuiFormRow fullWidth label="Description">
                         <EuiFieldText fullWidth name="description" value={description} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
-                    <EuiFormRow fullWidth label="Events">
-                        <EuiComboBox
-                            fullWidth
-                            selectedOptions={events}
-                            options={eventsList} onChange={e => handleEventSelection(e)} />
-                    </EuiFormRow>
                     <EuiFormRow fullWidth label="Entity">
                         <EuiComboBox singleSelection={{ asPlainText: true }}
                             fullWidth
                             selectedOptions={entity}
                             options={entitiesList} onChange={e => handleEntitySelection(e)} />
-                    </EuiFormRow>
-                    <EuiFormRow fullWidth label="Type">
-                        <EuiComboBox singleSelection={{ asPlainText: true }}
-                            fullWidth
-                            selectedOptions={expressionType}
-                            options={expressionTypesList} onChange={e => handleExpressionTypeSelection(e)} />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Snippet">
                         <EuiTextArea fullWidth name="expression" value={expression} onChange={e => handleInputChange(e)} />
@@ -86,7 +73,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
     return flyout;
 }
 
-class ADPs extends Component {
+class States extends Component {
 
     constructor(props) {
         super(props);
@@ -99,28 +86,22 @@ class ADPs extends Component {
         this.setFlyoutVisibility = this.setFlyoutVisibility.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleEventSelection = this.handleEventSelection.bind(this);
         this.handleEntitySelection = this.handleEntitySelection.bind(this);
-        this.handleExpressionTypeSelection = this.handleExpressionTypeSelection.bind( this );
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        let selectedEvents = [];
-        this.state.events.map((item, index) => { selectedEvents.push(item['label']) });
         let thisBuildingBlock = {
             'name': this.state.name,
             'description': this.state.description,
             'expression': this.state.expression,
-            'entity': this.state.entity[0]['label'],
-            'events': selectedEvents,
-            'expressionType': this.state.expressionType[0]['label']
+            'entity': this.state.entity[0]['label']
         }
         const requestOptions = {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
+        let thisurl = 'http://localhost:8111/api/v1/states/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -141,26 +122,12 @@ class ADPs extends Component {
             this.setState({ description: target.value });
         if (target.name === 'expression')
             this.setState({ expression: target.value });
-        if (target.name === 'expressionType')
-            this.setState({ expressionType: target.value });
-    }
-
-    handleEventSelection(selectedEvent) {
-        this.setState({
-            events: selectedEvent,
-        })
     }
 
     handleEntitySelection(selectedEntity) {
         this.setState({
             entity: selectedEntity
         })
-    }
-
-    handleExpressionTypeSelection( selectedExpressionType ) {
-        this.setState( { 
-            expressionType : selectedExpressionType
-        } );
     }
 
     setFlyoutVisibility(visibility, buildingBlock, buildingBlockId) {
@@ -175,22 +142,16 @@ class ADPs extends Component {
                 description: buildingBlock['description'],
                 expression: buildingBlock['expression'],
             });             
-            var expTypeVal = [];
-            expTypeVal.push( { label : buildingBlock[ 'expressionType' ] } )
             var entityVal = [];
             entityVal.push({ label: buildingBlock['entity'] });
-            var eventsVal = [];
-            buildingBlock['events'].map((key, index) => { eventsVal.push({ label: key }) });
             this.setState({
-                events: eventsVal,
-                entity: entityVal,
-                expressionType : expTypeVal
+                entity: entityVal
             })
         }
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/adps', { mode: 'cors' })
+        fetch('http://localhost:8111/api/v1/states', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
@@ -205,18 +166,6 @@ class ADPs extends Component {
                 this.setState({ entitiesList: options });
             })
             .catch(console.log)
-        fetch('http://localhost:8111/api/v1/events', { mode: 'cors' })
-            .then(res => res.json())
-            .then((data) => {
-                var options = [];
-                Object.keys(data).map((key, index) => { options.push({ label: key }) });
-                this.setState({ eventsList: options });
-            })
-            .catch(console.log)
-        const expTypesArray = [ 'int', 'long', 'double', 'String' ];
-        const expTypesOptions = [];
-        expTypesArray.map( ( item, index ) => {expTypesOptions.push( { label : item } ) } );
-        this.setState({ expressionTypesList : expTypesOptions });
     }
 
     render() {
@@ -225,13 +174,12 @@ class ADPs extends Component {
                 {cards(this.state.buildingBlocks, this.setFlyoutVisibility)}
                 {flyout(this.state.flyoutVisibility, this.setFlyoutVisibility,
                     this.handleInputChange, this.handleSubmit, this.state.id, this.state.name,
-                    this.state.description, this.state.events, this.state.entity, this.state.expressionType, 
-                    this.state.expressionTypesList, this.handleExpressionTypeSelection, 
-                    this.state.expression, this.state.entitiesList, this.state.eventsList,
-                    this.handleEntitySelection, this.handleEventSelection)}
+                    this.state.description, this.state.entity, 
+                    this.state.expression, this.state.entitiesList,
+                    this.handleEntitySelection )}
             </EuiFlexGroup>
         );
     }
 }
 
-export default ADPs;
+export default States;
