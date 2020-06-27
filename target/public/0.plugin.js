@@ -102,7 +102,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       hasBorder: true
     }, _react.default.createElement(_eui.EuiTitle, {
       size: "m"
-    }, _react.default.createElement("h2", {
+    }, _react.default.createElement("h5", {
       id: "flyoutTitle"
     }, name))), _react.default.createElement(_eui.EuiFlyoutBody, null, _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
@@ -148,6 +148,36 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       options: entitiesList,
       onChange: e => handleEntitySelection(e)
     })), _react.default.createElement(_eui.EuiFormRow, {
+      fullWidth: true,
+      label: "Window"
+    }, _react.default.createElement(_eui.EuiPanel, null, _react.default.createElement(_eui.EuiFlexGroup, {
+      wrap: true,
+      gutterSize: "l"
+    }, _react.default.createElement(_eui.EuiFlexItem, null, _react.default.createElement(_eui.EuiCheckbox, {
+      id: "hourly",
+      label: "Hourly",
+      checked: false
+    })), _react.default.createElement(_eui.EuiFlexItem, null, _react.default.createElement(_eui.EuiCheckbox, {
+      id: "daily",
+      label: "Daily",
+      checked: false
+    })), _react.default.createElement(_eui.EuiFlexItem, null, _react.default.createElement(_eui.EuiCheckbox, {
+      id: "monthly",
+      label: "Monthly",
+      checked: false
+    })), _react.default.createElement(_eui.EuiFlexItem, null, _react.default.createElement(_eui.EuiCheckbox, {
+      id: "yearly",
+      label: "Yealy",
+      checked: false
+    })), _react.default.createElement(_eui.EuiFlexItem, null, _react.default.createElement(_eui.EuiCheckbox, {
+      id: "session",
+      label: "Session",
+      checked: false
+    })), _react.default.createElement(_eui.EuiFlexItem, null, _react.default.createElement(_eui.EuiCheckbox, {
+      id: "perpetual",
+      label: "Perpetual",
+      checked: true
+    }))))), _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
       label: "Type"
     }, _react.default.createElement(_eui.EuiComboBox, {
@@ -212,7 +242,7 @@ class ADPs extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
+    let thisurl = 'http://54.144.128.241:8111/api/v1/adps/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -294,14 +324,14 @@ class ADPs extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/adps', {
+    fetch('http://54.144.128.241:8111/api/v1/adps', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
       });
     }).catch(console.log);
-    fetch('http://localhost:8111/api/v1/entities', {
+    fetch('http://54.144.128.241:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];
@@ -314,7 +344,7 @@ class ADPs extends _react.Component {
         entitiesList: options
       });
     }).catch(console.log);
-    fetch('http://localhost:8111/api/v1/events', {
+    fetch('http://54.144.128.241:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];
@@ -372,6 +402,10 @@ exports.default = void 0;
 var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
 
 var _eui = __webpack_require__(/*! @elastic/eui */ "@elastic/eui");
+
+var _GeoFence = _interopRequireDefault(__webpack_require__(/*! ./GeoFence */ "./public/components/GeoFence.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -436,6 +470,9 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       value: description,
       onChange: e => handleInputChange(e)
     })), _react.default.createElement(_eui.EuiFormRow, {
+      fullWidth: true,
+      label: "GeoFence"
+    }, _react.default.createElement(_GeoFence.default, null)), _react.default.createElement(_eui.EuiFormRow, {
       display: "center"
     }, _react.default.createElement(_eui.EuiButton, {
       type: "submit",
@@ -470,7 +507,7 @@ class Entities extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://localhost:8111/api/v1/entities/'.concat(this.state.id);
+    let thisurl = 'http://54.144.128.241:8111/api/v1/entities/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -509,7 +546,7 @@ class Entities extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/entities', {
+    fetch('http://54.144.128.241:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -639,7 +676,7 @@ class Events extends _react.Component {
       method: 'POST',
       body: JSON.stringify(this.state.schema)
     };
-    let thisurl = 'http://localhost:8111/api/v1/events/'.concat(this.state.id);
+    let thisurl = 'http://54.144.128.241:8111/api/v1/events/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -674,7 +711,7 @@ class Events extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/events', {
+    fetch('http://54.144.128.241:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -693,6 +730,199 @@ class Events extends _react.Component {
 }
 
 var _default = Events;
+exports.default = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ "./public/components/GeoFence.js":
+/*!***************************************!*\
+  !*** ./public/components/GeoFence.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+class GeoFence extends _react.Component {
+  constructor(props) {
+    super(props);
+
+    _defineProperty(this, "googleMapRef", _react.default.createRef());
+
+    _defineProperty(this, "searchBoxRef", _react.default.createRef());
+
+    _defineProperty(this, "overlayComplete", event => {
+      this.setState({
+        vertices: event.overlay.getPath().getArray()
+      });
+      this.setState({
+        geofence: event.overlay
+      });
+      alert(this.state.vertices);
+    });
+
+    _defineProperty(this, "createGoogleMap", () => new window.google.maps.Map(this.googleMapRef.current, {
+      zoom: 13,
+      center: {
+        lat: 1.3053603738630137,
+        lng: 103.91608884736023
+      },
+      mapTypeControl: false
+    }));
+
+    _defineProperty(this, "addSearchBox", map => {
+      // Create the search box and link it to the UI element.
+      map.controls[window.google.maps.ControlPosition.TOP_LEFT].push(this.searchBoxRef.current);
+      var searchBox = new window.google.maps.places.SearchBox(this.searchBoxRef.current);
+      window.google.maps.event.addListener(searchBox, 'places_changed', function () {
+        var places = searchBox.getPlaces();
+
+        if (places.length == 0) {
+          return;
+        } // For each place, get the icon, place name, and location.
+
+
+        var markers = [];
+        var bounds = new window.google.maps.LatLngBounds();
+
+        for (var i = 0, place; place = places[i]; i++) {
+          var image = {
+            url: place.icon,
+            size: new window.google.maps.Size(71, 71),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(17, 34),
+            scaledSize: new window.google.maps.Size(25, 25)
+          }; // Create a marker for each place.
+
+          var marker = new window.google.maps.Marker({
+            map: map,
+            icon: image,
+            title: place.name,
+            position: place.geometry.location
+          });
+          markers.push(marker);
+          bounds.extend(place.geometry.location);
+        }
+
+        map.fitBounds(bounds);
+      }); // Bias the SearchBox results towards places that are within the bounds of the
+      // current map's viewport.
+
+      window.google.maps.event.addListener(map, 'bounds_changed', function () {
+        var bounds = map.getBounds();
+        searchBox.setBounds(bounds);
+      });
+    });
+
+    let path = [[1.3052745654476596, 103.91608884736023], [1.3053603738630137, 103.91815951271973], [1.3037192874118098, 103.91843846245727], [1.3036763831765126, 103.9157777111145]];
+    this.state = {
+      vertices: path
+    };
+    this.removeShape = this.removeShape.bind(this);
+  }
+
+  initialiseFence(map) {
+    var initialfenceCoords = [];
+    var bounds = new window.google.maps.LatLngBounds();
+
+    for (var i = 0; i < this.state.vertices.length; i++) {
+      var pt = new window.google.maps.LatLng(this.state.vertices[i][0], this.state.vertices[i][1]);
+      initialfenceCoords.push(pt);
+      bounds.extend(pt);
+    }
+
+    var initialfence = new window.google.maps.Polygon({
+      paths: initialfenceCoords,
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: map
+    });
+    initialfence.setMap(map);
+    map.fitBounds(bounds);
+    this.setState({
+      geofence: initialfence
+    });
+  }
+
+  componentDidMount() {
+    this.createMapWithSearchBox();
+  }
+
+  createMapWithSearchBox() {
+    const googleMapScript = document.createElement("script");
+    googleMapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDNky_CeUScOyH3-d-NGfXEAQVhP-n9PK8&libraries=places,geometry,drawing";
+    window.document.body.appendChild(googleMapScript);
+    googleMapScript.addEventListener("load", () => {
+      this.googleMap = this.createGoogleMap();
+      this.drawingManager = new window.google.maps.drawing.DrawingManager({
+        drawingMode: window.google.maps.drawing.OverlayType.POLYGON,
+        drawingControl: true,
+        drawingControlOptions: {
+          position: window.google.maps.ControlPosition.TOP_CENTER,
+          drawingModes: [window.google.maps.drawing.OverlayType.POLYGON]
+        },
+        polygonOptions: {
+          editable: true
+        }
+      });
+      this.drawingManager.setMap(this.googleMap);
+      window.google.maps.event.addListener(this.drawingManager, "overlaycomplete", this.overlayComplete);
+      this.initialiseFence(this.googleMap);
+      this.addSearchBox(this.googleMap);
+    });
+  }
+
+  removeShape() {
+    this.state.geofence.setMap(null);
+    this.setState({
+      vertices: null
+    });
+  }
+
+  render() {
+    return _react.default.createElement("div", null, _react.default.createElement("div", null, _react.default.createElement("input", {
+      id: "pac-input",
+      style: {
+        width: "350px",
+        height: "20px"
+      },
+      class: "controls",
+      type: "text",
+      placeholder: "Search Box",
+      ref: this.searchBoxRef
+    })), _react.default.createElement("div", null, _react.default.createElement("input", {
+      type: "button",
+      onClick: this.removeShape,
+      value: "Remove"
+    })), _react.default.createElement("div", {
+      id: "google-map",
+      ref: this.googleMapRef,
+      style: {
+        width: "800px",
+        height: "500px"
+      }
+    }));
+  }
+
+}
+
+var _default = GeoFence;
 exports.default = _default;
 module.exports = exports.default;
 
@@ -804,7 +1034,7 @@ class Simulator extends _react.Component {
       method: 'POST',
       body: JSON.stringify(this.state.schema)
     };
-    let thisurl = 'http://localhost:8111/api/v1/getOffers';
+    let thisurl = 'http://54.144.128.241:8111/api/v1/getOffers';
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         entity360: data
@@ -873,7 +1103,7 @@ class Simulator extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/events', {
+    fetch('http://54.144.128.241:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -994,6 +1224,11 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       options: entitiesList,
       onChange: e => handleEntitySelection(e)
     })), _react.default.createElement(_eui.EuiFormRow, {
+      fullWidth: true
+    }, _react.default.createElement(_eui.EuiSwitch, {
+      label: "Capture State Changes",
+      checked: false
+    })), _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
       label: "Snippet"
     }, _react.default.createElement(_eui.EuiTextArea, {
@@ -1039,7 +1274,7 @@ class States extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://localhost:8111/api/v1/states/'.concat(this.state.id);
+    let thisurl = 'http://54.144.128.241:8111/api/v1/states/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -1094,14 +1329,14 @@ class States extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/states', {
+    fetch('http://54.144.128.241:8111/api/v1/states', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
       });
     }).catch(console.log);
-    fetch('http://localhost:8111/api/v1/entities', {
+    fetch('http://54.144.128.241:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];

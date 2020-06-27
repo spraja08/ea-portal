@@ -9,7 +9,9 @@ import {
     EuiComboBox,
     EuiFieldText,
     EuiFormRow,
-    EuiTextArea
+    EuiTextArea,
+    EuiSwitch,
+    EuiPanel
 } from '@elastic/eui';
 
 function cards(buildingBlocks, setFlyoutVisibility) {
@@ -30,7 +32,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
 }
 
 function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description,
-                entity, expression, entitiesList, handleEntitySelection ) {
+    entity, expression, entitiesList, handleEntitySelection) {
     let flyout;
     if (isFlyoutVisible) {
         flyout = (
@@ -57,6 +59,12 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                             fullWidth
                             selectedOptions={entity}
                             options={entitiesList} onChange={e => handleEntitySelection(e)} />
+                    </EuiFormRow>
+                    <EuiFormRow fullWidth >
+                            <EuiSwitch
+                                label="Capture State Changes"
+                                checked={false}
+                            />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Snippet">
                         <EuiTextArea fullWidth name="expression" value={expression} onChange={e => handleInputChange(e)} />
@@ -101,7 +109,7 @@ class States extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/states/'.concat(this.state.id);
+        let thisurl = 'http://54.144.128.241:8111/api/v1/states/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -141,7 +149,7 @@ class States extends Component {
                 name: buildingBlock['name'],
                 description: buildingBlock['description'],
                 expression: buildingBlock['expression'],
-            });             
+            });
             var entityVal = [];
             entityVal.push({ label: buildingBlock['entity'] });
             this.setState({
@@ -151,14 +159,14 @@ class States extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/states', { mode: 'cors' })
+        fetch('http://54.144.128.241:8111/api/v1/states', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
             })
             .catch(console.log);
 
-        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://54.144.128.241:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];
@@ -174,9 +182,9 @@ class States extends Component {
                 {cards(this.state.buildingBlocks, this.setFlyoutVisibility)}
                 {flyout(this.state.flyoutVisibility, this.setFlyoutVisibility,
                     this.handleInputChange, this.handleSubmit, this.state.id, this.state.name,
-                    this.state.description, this.state.entity, 
+                    this.state.description, this.state.entity,
                     this.state.expression, this.state.entitiesList,
-                    this.handleEntitySelection )}
+                    this.handleEntitySelection)}
             </EuiFlexGroup>
         );
     }

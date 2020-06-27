@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { EuiCard, EuiIcon, EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
 import {
     EuiFlyout,
@@ -9,7 +9,9 @@ import {
     EuiComboBox,
     EuiFieldText,
     EuiFormRow,
-    EuiTextArea
+    EuiTextArea,
+    EuiCheckbox,
+    EuiPanel
 } from '@elastic/eui';
 
 function cards(buildingBlocks, setFlyoutVisibility) {
@@ -40,7 +42,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                 maxWidth={750}>
                 <EuiFlyoutHeader hasBorder>
                     <EuiTitle size="m">
-                        <h2 id="flyoutTitle">{name}</h2>
+                        <h5 id="flyoutTitle">{name}</h5>
                     </EuiTitle>
                 </EuiFlyoutHeader>
                 <EuiFlyoutBody>
@@ -64,6 +66,18 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                             fullWidth
                             selectedOptions={entity}
                             options={entitiesList} onChange={e => handleEntitySelection(e)} />
+                    </EuiFormRow>
+                    <EuiFormRow fullWidth label="Window">
+                        <EuiPanel>
+                            <EuiFlexGroup wrap gutterSize="l" >
+                                <EuiFlexItem><EuiCheckbox id="hourly" label="Hourly" checked={false}/></EuiFlexItem>   
+                                <EuiFlexItem><EuiCheckbox id="daily" label="Daily" checked={false}/></EuiFlexItem>       
+                                <EuiFlexItem><EuiCheckbox id="monthly" label="Monthly" checked={false}/></EuiFlexItem>       
+                                <EuiFlexItem><EuiCheckbox id="yearly" label="Yealy" checked={false}/></EuiFlexItem>   
+                                <EuiFlexItem><EuiCheckbox id="session" label="Session" checked={false}/></EuiFlexItem>             
+                                <EuiFlexItem><EuiCheckbox id="perpetual" label="Perpetual" checked={true}/></EuiFlexItem>   
+                            </EuiFlexGroup>  
+                        </EuiPanel>        
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Type">
                         <EuiComboBox singleSelection={{ asPlainText: true }}
@@ -120,7 +134,7 @@ class ADPs extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
+        let thisurl = 'http://54.144.128.241:8111/api/v1/adps/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -190,14 +204,14 @@ class ADPs extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/adps', { mode: 'cors' })
+        fetch('http://54.144.128.241:8111/api/v1/adps', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
             })
             .catch(console.log);
 
-        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://54.144.128.241:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];
@@ -205,7 +219,7 @@ class ADPs extends Component {
                 this.setState({ entitiesList: options });
             })
             .catch(console.log)
-        fetch('http://localhost:8111/api/v1/events', { mode: 'cors' })
+        fetch('http://54.144.128.241:8111/api/v1/events', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];

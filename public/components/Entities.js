@@ -11,6 +11,7 @@ import {
     EuiFormRow,
     EuiTextArea
 } from '@elastic/eui';
+import GeoFence from './GeoFence';
 
 function cards(buildingBlocks, setFlyoutVisibility) {
     const cardNodes = Object.keys(buildingBlocks).map(function (key, index) {
@@ -50,6 +51,9 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                     <EuiFormRow fullWidth label="Description">
                         <EuiFieldText fullWidth name="description" value={description} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
+                    <EuiFormRow fullWidth label="GeoFence">
+                        <GeoFence/>
+                    </EuiFormRow>
                     <EuiFormRow display="center">
                         <EuiButton type="submit" fill onClick={e => handleSubmit(e)}>
                             Submit
@@ -87,7 +91,7 @@ class Entities extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/entities/'.concat(this.state.id);
+        let thisurl = 'http://54.144.128.241:8111/api/v1/entities/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -124,7 +128,7 @@ class Entities extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://54.144.128.241:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
