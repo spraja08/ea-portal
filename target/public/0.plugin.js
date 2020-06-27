@@ -430,7 +430,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
   return cardNodes;
 }
 
-function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description) {
+function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, geoFence, handleRemoveGeoFence) {
   let flyout;
 
   if (isFlyoutVisible) {
@@ -472,13 +472,20 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
     })), _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
       label: "GeoFence"
-    }, _react.default.createElement(_GeoFence.default, null)), _react.default.createElement(_eui.EuiFormRow, {
+    }, _react.default.createElement(_GeoFence.default, {
+      ref: "GeoFenceComponent",
+      geoFenceCoords: geoFence
+    })), _react.default.createElement(_eui.EuiFormRow, {
       display: "center"
-    }, _react.default.createElement(_eui.EuiButton, {
+    }, _react.default.createElement("div", null, _react.default.createElement(_eui.EuiButton, {
+      type: "submit",
+      fill: true,
+      onClick: e => handleRemoveGeoFence(e)
+    }, "Remove"), "\xA0\xA0\xA0\xA0", _react.default.createElement(_eui.EuiButton, {
       type: "submit",
       fill: true,
       onClick: e => handleSubmit(e)
-    }, "Submit"))));
+    }, "Submit")))));
   }
 
   return flyout;
@@ -495,13 +502,19 @@ class Entities extends _react.Component {
     this.setFlyoutVisibility = this.setFlyoutVisibility.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.removeGeoFence = this.removeGeoFence.bind(this);
+  }
+
+  removeGeoFence(event) {
+    this.refs.GeoFenceComponent.removeShape();
   }
 
   handleSubmit(event) {
     event.preventDefault();
     let thisBuildingBlock = {
       'name': this.state.name,
-      'description': this.state.description
+      'description': this.state.description,
+      'geoFence': this.refs.GeoFenceComponent.getGeoFence()
     };
     const requestOptions = {
       method: 'POST',
@@ -540,7 +553,7 @@ class Entities extends _react.Component {
         id: buildingBlockId,
         name: buildingBlock['name'],
         description: buildingBlock['description'],
-        expression: buildingBlock['expression']
+        geoFence: buildingBlock['geoFence']
       });
     }
   }
@@ -559,7 +572,7 @@ class Entities extends _react.Component {
     return _react.default.createElement(_eui.EuiFlexGroup, {
       wrap: true,
       gutterSize: "l"
-    }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.description));
+    }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.description, this.state.geoFence, this.removeGeoFence));
   }
 
 }
@@ -765,13 +778,17 @@ class GeoFence extends _react.Component {
     _defineProperty(this, "searchBoxRef", _react.default.createRef());
 
     _defineProperty(this, "overlayComplete", event => {
-      this.setState({
-        vertices: event.overlay.getPath().getArray()
+      let path = [];
+      let fencePoints = event.overlay.getPath();
+      fencePoints.forEach(function (xy, i) {
+        path.push([xy.lat(), xy.lng()]);
       });
       this.setState({
-        geofence: event.overlay
+        vertices: path
       });
-      alert(this.state.vertices);
+      this.setState({
+        geofenceOverlay: event.overlay
+      });
     });
 
     _defineProperty(this, "createGoogleMap", () => new window.google.maps.Map(this.googleMapRef.current, {
@@ -827,14 +844,16 @@ class GeoFence extends _react.Component {
       });
     });
 
-    let path = [[1.3052745654476596, 103.91608884736023], [1.3053603738630137, 103.91815951271973], [1.3037192874118098, 103.91843846245727], [1.3036763831765126, 103.9157777111145]];
+    let incomingFence = [];
+    if (props.geoFenceCoords != null && props.geoFenceCoords.length > 0) incomingFence = props.geoFenceCoords;
     this.state = {
-      vertices: path
+      vertices: incomingFence
     };
     this.removeShape = this.removeShape.bind(this);
   }
 
   initialiseFence(map) {
+    if (this.state.vertices.length == 0) return;
     var initialfenceCoords = [];
     var bounds = new window.google.maps.LatLngBounds();
 
@@ -856,7 +875,7 @@ class GeoFence extends _react.Component {
     initialfence.setMap(map);
     map.fitBounds(bounds);
     this.setState({
-      geofence: initialfence
+      geofenceOverlay: initialfence
     });
   }
 
@@ -865,10 +884,10 @@ class GeoFence extends _react.Component {
   }
 
   createMapWithSearchBox() {
-    const googleMapScript = document.createElement("script");
-    googleMapScript.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDNky_CeUScOyH3-d-NGfXEAQVhP-n9PK8&libraries=places,geometry,drawing";
+    const googleMapScript = document.createElement('script');
+    googleMapScript.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDNky_CeUScOyH3-d-NGfXEAQVhP-n9PK8&libraries=places,geometry,drawing';
     window.document.body.appendChild(googleMapScript);
-    googleMapScript.addEventListener("load", () => {
+    googleMapScript.addEventListener('load', () => {
       this.googleMap = this.createGoogleMap();
       this.drawingManager = new window.google.maps.drawing.DrawingManager({
         drawingMode: window.google.maps.drawing.OverlayType.POLYGON,
@@ -882,40 +901,39 @@ class GeoFence extends _react.Component {
         }
       });
       this.drawingManager.setMap(this.googleMap);
-      window.google.maps.event.addListener(this.drawingManager, "overlaycomplete", this.overlayComplete);
+      window.google.maps.event.addListener(this.drawingManager, 'overlaycomplete', this.overlayComplete);
       this.initialiseFence(this.googleMap);
       this.addSearchBox(this.googleMap);
     });
   }
 
   removeShape() {
-    this.state.geofence.setMap(null);
+    this.state.geofenceOverlay.setMap(null);
     this.setState({
       vertices: null
     });
+  }
+
+  getGeoFence() {
+    return this.state.vertices;
   }
 
   render() {
     return _react.default.createElement("div", null, _react.default.createElement("div", null, _react.default.createElement("input", {
       id: "pac-input",
       style: {
-        width: "350px",
-        height: "20px"
+        width: '300px',
+        height: '20px'
       },
       class: "controls",
       type: "text",
       placeholder: "Search Box",
       ref: this.searchBoxRef
-    })), _react.default.createElement("div", null, _react.default.createElement("input", {
-      type: "button",
-      onClick: this.removeShape,
-      value: "Remove"
     })), _react.default.createElement("div", {
       id: "google-map",
       ref: this.googleMapRef,
       style: {
-        width: "800px",
-        height: "500px"
+        height: '400px'
       }
     }));
   }

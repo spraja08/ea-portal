@@ -29,7 +29,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
     return cardNodes;
 }
 
-function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description) {
+function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, geoFence, handleRemoveGeoFence) {
     let flyout;
     if (isFlyoutVisible) {
         flyout = (
@@ -52,12 +52,13 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                         <EuiFieldText fullWidth name="description" value={description} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="GeoFence">
-                        <GeoFence/>
+                        <GeoFence ref="GeoFenceComponent" geoFenceCoords={geoFence} />
                     </EuiFormRow>
                     <EuiFormRow display="center">
-                        <EuiButton type="submit" fill onClick={e => handleSubmit(e)}>
-                            Submit
-                            </EuiButton>
+                        <div>
+                            <EuiButton type="submit" fill onClick={e => handleRemoveGeoFence(e)}>Remove</EuiButton>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <EuiButton type="submit" fill onClick={e => handleSubmit(e)}>Submit</EuiButton>
+                        </div>
                     </EuiFormRow>
                 </EuiFlyoutBody>
             </EuiFlyout>
@@ -79,13 +80,20 @@ class Entities extends Component {
         this.setFlyoutVisibility = this.setFlyoutVisibility.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.removeGeoFence = this.removeGeoFence.bind(this);
+    }
+
+    removeGeoFence(event) {
+        this.refs.GeoFenceComponent.removeShape();
     }
 
     handleSubmit(event) {
         event.preventDefault();
+
         let thisBuildingBlock = {
             'name': this.state.name,
-            'description': this.state.description
+            'description': this.state.description,
+            'geoFence' : this.refs.GeoFenceComponent.getGeoFence()
         }
         const requestOptions = {
             method: 'POST',
@@ -122,8 +130,8 @@ class Entities extends Component {
                 id: buildingBlockId,
                 name: buildingBlock['name'],
                 description: buildingBlock['description'],
-                expression: buildingBlock['expression'],
-            });             
+                geoFence: buildingBlock['geoFence'],
+            });
         }
     }
 
@@ -142,7 +150,7 @@ class Entities extends Component {
                 {cards(this.state.buildingBlocks, this.setFlyoutVisibility)}
                 {flyout(this.state.flyoutVisibility, this.setFlyoutVisibility,
                     this.handleInputChange, this.handleSubmit, this.state.id, this.state.name,
-                    this.state.description)}
+                    this.state.description, this.state.geoFence, this.removeGeoFence)}
             </EuiFlexGroup>
         );
     }
