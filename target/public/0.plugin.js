@@ -82,7 +82,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
       }),
       title: buildingBlocks[key]['name'],
       description: buildingBlocks[key]['description'],
-      betaBadgeLabel: buildingBlocks[key]['entity'],
+      betaBadgeLabel: JSON.stringify(buildingBlocks[key]['entity']).replace("[", "").replace("]", "").replace(/"/g, ''),
       onClick: () => setFlyoutVisibility(true, buildingBlocks[key], key)
     }));
   });
@@ -140,9 +140,6 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       fullWidth: true,
       label: "Entity"
     }, _react.default.createElement(_eui.EuiComboBox, {
-      singleSelection: {
-        asPlainText: true
-      },
       fullWidth: true,
       selectedOptions: entity,
       options: entitiesList,
@@ -230,11 +227,16 @@ class ADPs extends _react.Component {
     this.state.events.map((item, index) => {
       selectedEvents.push(item['label']);
     });
+    let selectedEntity = [];
+    this.state.entity.map((item, index) => {
+      selectedEntity.push(item['label']);
+    });
     let thisBuildingBlock = {
+      'id': this.state.id,
       'name': this.state.name,
       'description': this.state.description,
       'expression': this.state.expression,
-      'entity': this.state.entity[0]['label'],
+      'entity': selectedEntity,
       'events': selectedEvents,
       'expressionType': this.state.expressionType[0]['label']
     };
@@ -242,7 +244,7 @@ class ADPs extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://54.144.128.241:8111/api/v1/adps/'.concat(this.state.id);
+    let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -305,9 +307,12 @@ class ADPs extends _react.Component {
       expTypeVal.push({
         label: buildingBlock['expressionType']
       });
-      var entityVal = [];
-      entityVal.push({
-        label: buildingBlock['entity']
+      var entityVal = []; //entityVal.push({ label: buildingBlock['entity'] });
+
+      buildingBlock['entity'].map((key, index) => {
+        entityVal.push({
+          label: key
+        });
       });
       var eventsVal = [];
       buildingBlock['events'].map((key, index) => {
@@ -324,14 +329,14 @@ class ADPs extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://54.144.128.241:8111/api/v1/adps', {
+    fetch('http://localhost:8111/api/v1/adps', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
       });
     }).catch(console.log);
-    fetch('http://54.144.128.241:8111/api/v1/entities', {
+    fetch('http://localhost:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];
@@ -344,7 +349,7 @@ class ADPs extends _react.Component {
         entitiesList: options
       });
     }).catch(console.log);
-    fetch('http://54.144.128.241:8111/api/v1/events', {
+    fetch('http://localhost:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];
@@ -511,16 +516,25 @@ class Entities extends _react.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    let latArray = [];
+    let lngArray = [];
+    this.refs.GeoFenceComponent.getGeoFence().map((coord, index) => {
+      latArray.push(coord[0]);
+      lngArray.push(coord[1]);
+    });
     let thisBuildingBlock = {
+      'id': this.state.id,
       'name': this.state.name,
       'description': this.state.description,
-      'geoFence': this.refs.GeoFenceComponent.getGeoFence()
+      'geoFence': this.refs.GeoFenceComponent.getGeoFence(),
+      'latArray': latArray,
+      'lngArray': lngArray
     };
     const requestOptions = {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://54.144.128.241:8111/api/v1/entities/'.concat(this.state.id);
+    let thisurl = 'http://localhost:8111/api/v1/entities/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -559,7 +573,7 @@ class Entities extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://54.144.128.241:8111/api/v1/entities', {
+    fetch('http://localhost:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -689,7 +703,7 @@ class Events extends _react.Component {
       method: 'POST',
       body: JSON.stringify(this.state.schema)
     };
-    let thisurl = 'http://54.144.128.241:8111/api/v1/events/'.concat(this.state.id);
+    let thisurl = 'http://localhost:8111/api/v1/events/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -724,7 +738,7 @@ class Events extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://54.144.128.241:8111/api/v1/events', {
+    fetch('http://localhost:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -967,6 +981,35 @@ var _eui = __webpack_require__(/*! @elastic/eui */ "@elastic/eui");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
+function formatJsonAttributes(document) {
+  const cards = Object.keys(document).map((key, index) => {
+    return _react.default.createElement(_eui.EuiText, {
+      size: "s"
+    }, key + ' : ' + document[key]);
+  });
+  return cards;
+}
+
+function entityCards(entity360) {
+  const cardNodes = Object.keys(entity360).map(function (key, index) {
+    return _react.default.createElement(_eui.EuiFlexItem, {
+      style: {
+        width: 350
+      },
+      grow: false,
+      key: index
+    }, _react.default.createElement(_eui.EuiCard, {
+      textAlign: "left",
+      title: key
+    }, _react.default.createElement(_eui.EuiText, {
+      size: "s"
+    }, _react.default.createElement("b", null, "ADPs:")), formatJsonAttributes(entity360[key]['ADPs']), _react.default.createElement(_eui.EuiSpacer, null), _react.default.createElement(_eui.EuiText, {
+      size: "s"
+    }, _react.default.createElement("b", null, "STATES:")), formatJsonAttributes(entity360[key]['states'])));
+  });
+  return cardNodes;
+}
+
 function cards(buildingBlocks, setFlyoutVisibility) {
   const cardNodes = Object.keys(buildingBlocks).map(function (key, index) {
     return _react.default.createElement(_eui.EuiFlexItem, {
@@ -994,7 +1037,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
     flyout = _react.default.createElement(_eui.EuiFlyout, {
       onClose: () => setFlyoutVisibility(false),
       "aria-labelledby": "flyoutTitle",
-      size: 'm',
+      size: 's',
       maxWidth: 750
     }, _react.default.createElement(_eui.EuiFlyoutHeader, {
       hasBorder: true
@@ -1052,11 +1095,12 @@ class Simulator extends _react.Component {
       method: 'POST',
       body: JSON.stringify(this.state.schema)
     };
-    let thisurl = 'http://54.144.128.241:8111/api/v1/getOffers';
+    let thisurl = 'http://localhost:8111/api/v1/getOffers';
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         entity360: data
       });
+      console.log(data);
     }).catch(console.log);
     this.setFlyoutVisibility(true, {}, this.state.id, this.state.name);
   }
@@ -1077,6 +1121,8 @@ class Simulator extends _react.Component {
       "event": "FlightBooking",
       "customerId": "raja",
       "timestamp": 1590847184000,
+      "latitude": -6.194772,
+      "longitude": 106.815968,
       "origin": "Jakarta",
       "destination": "Singapore",
       "departureTime": 1590847184000,
@@ -1121,7 +1167,7 @@ class Simulator extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://54.144.128.241:8111/api/v1/events', {
+    fetch('http://localhost:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -1137,7 +1183,10 @@ class Simulator extends _react.Component {
     }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.schema))), _react.default.createElement(_eui.EuiPanel, null, _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
       label: "Entities 360 After Event Processing :"
-    }, _react.default.createElement(_eui.EuiText, null, _react.default.createElement("pre", null, JSON.stringify(this.state.entity360, null, 4))))));
+    }, _react.default.createElement(_eui.EuiFlexGroup, {
+      wrap: true,
+      gutterSize: "l"
+    }, entityCards(this.state.entity360)))));
   }
 
 }
@@ -1184,7 +1233,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
       }),
       title: buildingBlocks[key]['name'],
       description: buildingBlocks[key]['description'],
-      betaBadgeLabel: buildingBlocks[key]['entity'],
+      betaBadgeLabel: JSON.stringify(buildingBlocks[key]['entity']).replace("[", "").replace("]", "").replace(/"/g, ''),
       onClick: () => setFlyoutVisibility(true, buildingBlocks[key], key)
     }));
   });
@@ -1234,9 +1283,6 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       fullWidth: true,
       label: "Entity"
     }, _react.default.createElement(_eui.EuiComboBox, {
-      singleSelection: {
-        asPlainText: true
-      },
       fullWidth: true,
       selectedOptions: entity,
       options: entitiesList,
@@ -1282,17 +1328,22 @@ class States extends _react.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    let selectedEntity = [];
+    this.state.entity.map((item, index) => {
+      selectedEntity.push(item['label']);
+    });
     let thisBuildingBlock = {
+      'id': this.state.id,
       'name': this.state.name,
       'description': this.state.description,
       'expression': this.state.expression,
-      'entity': this.state.entity[0]['label']
+      'entity': selectedEntity
     };
     const requestOptions = {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://54.144.128.241:8111/api/v1/states/'.concat(this.state.id);
+    let thisurl = 'http://localhost:8111/api/v1/states/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -1336,9 +1387,12 @@ class States extends _react.Component {
         description: buildingBlock['description'],
         expression: buildingBlock['expression']
       });
-      var entityVal = [];
-      entityVal.push({
-        label: buildingBlock['entity']
+      var entityVal = []; //entityVal.push({ label: buildingBlock['entity'] });
+
+      buildingBlock['entity'].map((key, index) => {
+        entityVal.push({
+          label: key
+        });
       });
       this.setState({
         entity: entityVal
@@ -1347,14 +1401,14 @@ class States extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://54.144.128.241:8111/api/v1/states', {
+    fetch('http://localhost:8111/api/v1/states', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
       });
     }).catch(console.log);
-    fetch('http://54.144.128.241:8111/api/v1/entities', {
+    fetch('http://localhost:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];

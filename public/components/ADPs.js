@@ -22,7 +22,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
                     icon={<EuiIcon size="xl" type="usersRolesApp" />}
                     title={buildingBlocks[key]['name']}
                     description={buildingBlocks[key]['description']}
-                    betaBadgeLabel={buildingBlocks[key]['entity']}
+                    betaBadgeLabel={JSON.stringify( buildingBlocks[key]['entity'] ).replace("[", "").replace( "]", "").replace(/"/g, '')}
                     onClick={() => setFlyoutVisibility(true, buildingBlocks[key], key)}
                 />
             </EuiFlexItem>
@@ -62,7 +62,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                             options={eventsList} onChange={e => handleEventSelection(e)} />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Entity">
-                        <EuiComboBox singleSelection={{ asPlainText: true }}
+                        <EuiComboBox
                             fullWidth
                             selectedOptions={entity}
                             options={entitiesList} onChange={e => handleEntitySelection(e)} />
@@ -122,11 +122,14 @@ class ADPs extends Component {
         event.preventDefault();
         let selectedEvents = [];
         this.state.events.map((item, index) => { selectedEvents.push(item['label']) });
+        let selectedEntity = [];
+        this.state.entity.map((item, index) => { selectedEntity.push(item['label']) });
         let thisBuildingBlock = {
+            'id' : this.state.id,
             'name': this.state.name,
             'description': this.state.description,
             'expression': this.state.expression,
-            'entity': this.state.entity[0]['label'],
+            'entity': selectedEntity,
             'events': selectedEvents,
             'expressionType': this.state.expressionType[0]['label']
         }
@@ -134,7 +137,7 @@ class ADPs extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://54.144.128.241:8111/api/v1/adps/'.concat(this.state.id);
+        let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -192,7 +195,8 @@ class ADPs extends Component {
             var expTypeVal = [];
             expTypeVal.push( { label : buildingBlock[ 'expressionType' ] } )
             var entityVal = [];
-            entityVal.push({ label: buildingBlock['entity'] });
+            //entityVal.push({ label: buildingBlock['entity'] });
+            buildingBlock['entity'].map((key, index) => { entityVal.push({ label: key }) });
             var eventsVal = [];
             buildingBlock['events'].map((key, index) => { eventsVal.push({ label: key }) });
             this.setState({
@@ -204,14 +208,14 @@ class ADPs extends Component {
     }
 
     componentDidMount() {
-        fetch('http://54.144.128.241:8111/api/v1/adps', { mode: 'cors' })
+        fetch('http://localhost:8111/api/v1/adps', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
             })
             .catch(console.log);
 
-        fetch('http://54.144.128.241:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];
@@ -219,7 +223,7 @@ class ADPs extends Component {
                 this.setState({ entitiesList: options });
             })
             .catch(console.log)
-        fetch('http://54.144.128.241:8111/api/v1/events', { mode: 'cors' })
+        fetch('http://localhost:8111/api/v1/events', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];

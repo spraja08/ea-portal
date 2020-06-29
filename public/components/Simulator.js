@@ -10,8 +10,35 @@ import {
     EuiFieldText,
     EuiFormRow,
     EuiTextArea,
-    EuiText
+    EuiText,
+    EuiSpacer
 } from '@elastic/eui';
+import { EuiForm } from '@elastic/eui';
+
+function formatJsonAttributes( document ) {
+    const cards = Object.keys( document ).map( ( key, index) => { 
+        return( 
+        <EuiText size="s">{key + ' : ' + document[key]}</EuiText>
+        ) } );
+    return cards;    
+}
+
+function entityCards(entity360) {
+  const cardNodes = Object.keys(entity360).map(function (key, index) {
+    return (
+      <EuiFlexItem style={{ width: 350 }} grow={false} key={index}>
+        <EuiCard textAlign="left" title={key}>
+        <EuiText size="s"><b>ADPs:</b></EuiText>    
+        {formatJsonAttributes( entity360[key]['ADPs'] )}
+        <EuiSpacer/>
+        <EuiText size="s"><b>STATES:</b></EuiText>    
+        {formatJsonAttributes( entity360[key]['states'] )}
+        </EuiCard>
+      </EuiFlexItem>
+    );
+  });
+  return cardNodes;
+}
 
 function cards(buildingBlocks, setFlyoutVisibility) {
     const cardNodes = Object.keys(buildingBlocks).map(function (key, index) {
@@ -28,12 +55,12 @@ function cards(buildingBlocks, setFlyoutVisibility) {
     return cardNodes;
 }
 
-function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, schema ) {
+function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, schema) {
     let flyout;
     if (isFlyoutVisible) {
         flyout = (
             <EuiFlyout onClose={() => setFlyoutVisibility(false)} aria-labelledby="flyoutTitle"
-                size={'m'}
+                size={'s'}
                 maxWidth={750}>
                 <EuiFlyoutHeader hasBorder>
                     <EuiTitle size="m">
@@ -45,7 +72,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                         <EuiFieldText fullWidth name="id" value={id} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Schema">
-                        <EuiTextArea style={{ height: 350 }} fullWidth name="schema" value={JSON.stringify(schema, null, 4 )} onChange={e => handleInputChange(e)} />
+                        <EuiTextArea style={{ height: 350 }} fullWidth name="schema" value={JSON.stringify(schema, null, 4)} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
                     <EuiFormRow display="center">
                         <EuiButton type="submit" fill onClick={e => handleSubmit(e)}>
@@ -67,7 +94,7 @@ class Simulator extends Component {
         {
             buildingBlocks: {},
             flyoutVisibility: false,
-            entity360 : {}
+            entity360: {}
         }
         this.setFlyoutVisibility = this.setFlyoutVisibility.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -80,11 +107,12 @@ class Simulator extends Component {
             method: 'POST',
             body: JSON.stringify(this.state.schema)
         };
-        let thisurl = 'http://54.144.128.241:8111/api/v1/getOffers';
+        let thisurl = 'http://localhost:8111/api/v1/getOffers';
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
-                this.setState({ entity360: data })
+                this.setState({ entity360: data });
+                console.log(data);
             })
             .catch(console.log)
 
@@ -96,26 +124,28 @@ class Simulator extends Component {
         if (target.name === 'id')
             this.setState({ id: target.value });
         if (target.name === 'schema')
-            this.setState({ schema: JSON.parse( target.value ) });
+            this.setState({ schema: JSON.parse(target.value) });
     }
 
     setFlyoutVisibility(visibility, buildingBlock, buildingBlockId, buildingBlockName) {
         let eventData = {};
-        if( buildingBlockId === 'FlightBooking' )
+        if (buildingBlockId === 'FlightBooking')
             eventData = {
-                "event" : "FlightBooking",
-                "customerId" : "raja",
-                "timestamp" : 1590847184000,
-                "origin" : "Jakarta",
-                "destination" : "Singapore",
-                "departureTime" : 1590847184000,
-                "airline" : "SQ",
-                "flightId" : "SQ065",
-                "amount" : 257.00,
-                "paymentMode" : "CreditCard"
+                "event": "FlightBooking",
+                "customerId": "raja",
+                "timestamp": 1590847184000,
+                "latitude": -6.194772,
+                "longitude": 106.815968,
+                "origin": "Jakarta",
+                "destination": "Singapore",
+                "departureTime": 1590847184000,
+                "airline": "SQ",
+                "flightId": "SQ065",
+                "amount": 257.00,
+                "paymentMode": "CreditCard"
             }
-        else if( buildingBlockId === 'TrainBooking' )
-            eventData =  {
+        else if (buildingBlockId === 'TrainBooking')
+            eventData = {
                 "event": "TrainBooking",
                 "customerId": "raja",
                 "timestamp": 1590847184000,
@@ -127,7 +157,7 @@ class Simulator extends Component {
                 "amount": 120,
                 "paymentMode": "CreditCard"
             }
-        else if( buildingBlockId == 'AccommodationBooking' )
+        else if (buildingBlockId == 'AccommodationBooking')
             eventData = {
                 "event": "AccommodationBooking",
                 "customerId": "raja",
@@ -135,26 +165,26 @@ class Simulator extends Component {
                 "checkInDate": 1590847184000,
                 "stayDuration": 3,
                 "hotelOperator": "InterContinental",
-                "hotelStarValue" : 5,
+                "hotelStarValue": 5,
                 "roomType": "Deluxe",
                 "amount": 750,
                 "paymentMode": "Credit Card"
-            }       
-            
+            }
+
         this.setState({
             flyoutVisibility: visibility,
         });
         if (visibility) {
             this.setState({
                 id: buildingBlockId,
-                name : buildingBlockName, 
-                schema : eventData
-            });             
+                name: buildingBlockName,
+                schema: eventData
+            });
         }
     }
 
     componentDidMount() {
-        fetch('http://54.144.128.241:8111/api/v1/events', { mode: 'cors' })
+        fetch('http://localhost:8111/api/v1/events', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
@@ -166,16 +196,18 @@ class Simulator extends Component {
         return (
             <div>
                 <EuiPanel>
-                <EuiFlexGroup wrap gutterSize="l">
-                    {cards(this.state.buildingBlocks, this.setFlyoutVisibility)}
-                    {flyout(this.state.flyoutVisibility, this.setFlyoutVisibility,
-                        this.handleInputChange, this.handleSubmit, this.state.id, this.state.name,
-                        this.state.schema)}
-                </EuiFlexGroup>        
+                    <EuiFlexGroup wrap gutterSize="l">
+                        {cards(this.state.buildingBlocks, this.setFlyoutVisibility)}
+                        {flyout(this.state.flyoutVisibility, this.setFlyoutVisibility,
+                            this.handleInputChange, this.handleSubmit, this.state.id, this.state.name,
+                            this.state.schema)}
+                    </EuiFlexGroup>
                 </EuiPanel>
                 <EuiPanel>
                     <EuiFormRow fullWidth label="Entities 360 After Event Processing :">
-                        <EuiText><pre>{JSON.stringify( this.state.entity360, null, 4 )}</pre></EuiText>
+                        <EuiFlexGroup wrap gutterSize="l">
+                            {entityCards(this.state.entity360)}
+                        </EuiFlexGroup>
                     </EuiFormRow>
                 </EuiPanel>
             </div>

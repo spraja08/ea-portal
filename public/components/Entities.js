@@ -90,16 +90,25 @@ class Entities extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
+        let latArray = [];
+        let lngArray = [];
+        this.refs.GeoFenceComponent.getGeoFence().map( ( coord, index ) => { 
+            latArray.push( coord[ 0 ] ); 
+            lngArray.push( coord[ 1 ] );
+        } );
         let thisBuildingBlock = {
+            'id' : this.state.id,
             'name': this.state.name,
             'description': this.state.description,
-            'geoFence' : this.refs.GeoFenceComponent.getGeoFence()
+            'geoFence' : this.refs.GeoFenceComponent.getGeoFence(),
+            'latArray' : latArray,
+            'lngArray' : lngArray
         }
         const requestOptions = {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://54.144.128.241:8111/api/v1/entities/'.concat(this.state.id);
+        let thisurl = 'http://localhost:8111/api/v1/entities/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -136,7 +145,7 @@ class Entities extends Component {
     }
 
     componentDidMount() {
-        fetch('http://54.144.128.241:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
