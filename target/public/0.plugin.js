@@ -526,6 +526,7 @@ class Entities extends _react.Component {
       'id': this.state.id,
       'name': this.state.name,
       'description': this.state.description,
+      'groupByKeys': [this.state.id],
       'geoFence': this.refs.GeoFenceComponent.getGeoFence(),
       'latArray': latArray,
       'lngArray': lngArray
