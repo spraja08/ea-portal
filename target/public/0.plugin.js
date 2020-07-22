@@ -89,7 +89,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
   return cardNodes;
 }
 
-function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, events, entity, expressionType, expressionTypesList, handleExpressionTypeSelection, expression, entitiesList, eventsList, handleEntitySelection, handleEventSelection) {
+function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, events, entity, expressionType, expressionTypesList, handleExpressionTypeSelection, expression, entitiesList, eventsList, handleEntitySelection, handleEventSelection, status, statusTypesList, handleStatusSelection) {
   let flyout;
 
   if (isFlyoutVisible) {
@@ -194,6 +194,17 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       value: expression,
       onChange: e => handleInputChange(e)
     })), _react.default.createElement(_eui.EuiFormRow, {
+      fullWidth: true,
+      label: "Status"
+    }, _react.default.createElement(_eui.EuiComboBox, {
+      singleSelection: {
+        asPlainText: true
+      },
+      fullWidth: true,
+      selectedOptions: status,
+      options: statusTypesList,
+      onChange: e => handleStatusSelection(e)
+    })), _react.default.createElement(_eui.EuiFormRow, {
       display: "center"
     }, _react.default.createElement(_eui.EuiButton, {
       type: "submit",
@@ -219,6 +230,7 @@ class ADPs extends _react.Component {
     this.handleEventSelection = this.handleEventSelection.bind(this);
     this.handleEntitySelection = this.handleEntitySelection.bind(this);
     this.handleExpressionTypeSelection = this.handleExpressionTypeSelection.bind(this);
+    this.handleStatusChange = this.handleStatusChange.bind(this);
   }
 
   handleSubmit(event) {
@@ -238,7 +250,8 @@ class ADPs extends _react.Component {
       'expression': this.state.expression,
       'entity': selectedEntity,
       'events': selectedEvents,
-      'expressionType': this.state.expressionType[0]['label']
+      'expressionType': this.state.expressionType[0]['label'],
+      'status': this.state.status[0]['label']
     };
     const requestOptions = {
       method: 'POST',
@@ -267,9 +280,6 @@ class ADPs extends _react.Component {
     if (target.name === 'expression') this.setState({
       expression: target.value
     });
-    if (target.name === 'expressionType') this.setState({
-      expressionType: target.value
-    });
   }
 
   handleEventSelection(selectedEvent) {
@@ -287,6 +297,12 @@ class ADPs extends _react.Component {
   handleExpressionTypeSelection(selectedExpressionType) {
     this.setState({
       expressionType: selectedExpressionType
+    });
+  }
+
+  handleStatusChange(selectedStatus) {
+    this.setState({
+      status: selectedStatus
     });
   }
 
@@ -320,10 +336,15 @@ class ADPs extends _react.Component {
           label: key
         });
       });
+      var statusVal = [];
+      statusVal.push({
+        label: buildingBlock['status']
+      });
       this.setState({
         events: eventsVal,
         entity: entityVal,
-        expressionType: expTypeVal
+        expressionType: expTypeVal,
+        status: statusVal
       });
     }
   }
@@ -372,13 +393,23 @@ class ADPs extends _react.Component {
     this.setState({
       expressionTypesList: expTypesOptions
     });
+    const statuses = ['Active', 'InActive'];
+    const statusOptions = [];
+    statuses.map((item, index) => {
+      statusOptions.push({
+        label: item
+      });
+    });
+    this.setState({
+      statusTypesList: statusOptions
+    });
   }
 
   render() {
     return _react.default.createElement(_eui.EuiFlexGroup, {
       wrap: true,
       gutterSize: "l"
-    }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.description, this.state.events, this.state.entity, this.state.expressionType, this.state.expressionTypesList, this.handleExpressionTypeSelection, this.state.expression, this.state.entitiesList, this.state.eventsList, this.handleEntitySelection, this.handleEventSelection));
+    }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.description, this.state.events, this.state.entity, this.state.expressionType, this.state.expressionTypesList, this.handleExpressionTypeSelection, this.state.expression, this.state.entitiesList, this.state.eventsList, this.handleEntitySelection, this.handleEventSelection, this.state.status, this.state.statusTypesList, this.handleStatusChange));
   }
 
 }

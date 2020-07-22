@@ -33,7 +33,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
 
 function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description,
     events, entity, expressionType, expressionTypesList, handleExpressionTypeSelection, expression, entitiesList, eventsList,
-    handleEntitySelection, handleEventSelection) {
+    handleEntitySelection, handleEventSelection, status, statusTypesList, handleStatusSelection) {
     let flyout;
     if (isFlyoutVisible) {
         flyout = (
@@ -88,6 +88,12 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                     <EuiFormRow fullWidth label="Snippet">
                         <EuiTextArea fullWidth name="expression" value={expression} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
+                    <EuiFormRow fullWidth label="Status">
+                        <EuiComboBox singleSelection={{ asPlainText: true }}
+                            fullWidth
+                            selectedOptions={status}
+                            options={statusTypesList} onChange={e => handleStatusSelection(e)} />
+                    </EuiFormRow>
                     <EuiFormRow display="center">
                         <EuiButton type="submit" fill onClick={e => handleSubmit(e)}>
                             Submit
@@ -116,6 +122,7 @@ class ADPs extends Component {
         this.handleEventSelection = this.handleEventSelection.bind(this);
         this.handleEntitySelection = this.handleEntitySelection.bind(this);
         this.handleExpressionTypeSelection = this.handleExpressionTypeSelection.bind( this );
+        this.handleStatusChange = this.handleStatusChange.bind( this );
     }
 
     handleSubmit(event) {
@@ -131,7 +138,8 @@ class ADPs extends Component {
             'expression': this.state.expression,
             'entity': selectedEntity,
             'events': selectedEvents,
-            'expressionType': this.state.expressionType[0]['label']
+            'expressionType': this.state.expressionType[0]['label'],
+            'status' : this.state.status[0]['label']
         }
         const requestOptions = {
             method: 'POST',
@@ -158,8 +166,6 @@ class ADPs extends Component {
             this.setState({ description: target.value });
         if (target.name === 'expression')
             this.setState({ expression: target.value });
-        if (target.name === 'expressionType')
-            this.setState({ expressionType: target.value });
     }
 
     handleEventSelection(selectedEvent) {
@@ -177,6 +183,12 @@ class ADPs extends Component {
     handleExpressionTypeSelection( selectedExpressionType ) {
         this.setState( { 
             expressionType : selectedExpressionType
+        } );
+    }
+
+    handleStatusChange( selectedStatus ) {
+        this.setState( { 
+            status : selectedStatus
         } );
     }
 
@@ -199,10 +211,13 @@ class ADPs extends Component {
             buildingBlock['entity'].map((key, index) => { entityVal.push({ label: key }) });
             var eventsVal = [];
             buildingBlock['events'].map((key, index) => { eventsVal.push({ label: key }) });
+            var statusVal = [];
+            statusVal.push( { label : buildingBlock[ 'status' ] } )
             this.setState({
                 events: eventsVal,
                 entity: entityVal,
-                expressionType : expTypeVal
+                expressionType : expTypeVal,
+                status : statusVal
             })
         }
     }
@@ -235,6 +250,11 @@ class ADPs extends Component {
         const expTypesOptions = [];
         expTypesArray.map( ( item, index ) => {expTypesOptions.push( { label : item } ) } );
         this.setState({ expressionTypesList : expTypesOptions });
+
+        const statuses = [ 'Active', 'InActive' ];
+        const statusOptions = [];
+        statuses.map( ( item, index ) => {statusOptions.push( { label : item } ) } );
+        this.setState({ statusTypesList : statusOptions });
     }
 
     render() {
@@ -246,7 +266,8 @@ class ADPs extends Component {
                     this.state.description, this.state.events, this.state.entity, this.state.expressionType, 
                     this.state.expressionTypesList, this.handleExpressionTypeSelection, 
                     this.state.expression, this.state.entitiesList, this.state.eventsList,
-                    this.handleEntitySelection, this.handleEventSelection)}
+                    this.handleEntitySelection, this.handleEventSelection,
+                    this.state.status, this.state.statusTypesList, this.handleStatusChange )}
             </EuiFlexGroup>
         );
     }
