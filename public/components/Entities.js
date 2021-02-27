@@ -29,7 +29,8 @@ function cards(buildingBlocks, setFlyoutVisibility) {
     return cardNodes;
 }
 
-function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, geoFence, handleRemoveGeoFence) {
+function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, 
+                description, geoFence, handleRemoveGeoFence, groupKeys) {
     let flyout;
     if (isFlyoutVisible) {
         flyout = (
@@ -42,7 +43,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                     </EuiTitle>
                 </EuiFlyoutHeader>
                 <EuiFlyoutBody>
-                    <EuiFormRow fullWidth label="ID">
+                    <EuiFormRow fullWidth label="Id Field (from Events Schema)">
                         <EuiFieldText fullWidth name="id" value={id} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Name">
@@ -50,6 +51,9 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="Description">
                         <EuiFieldText fullWidth name="description" value={description} onChange={e => handleInputChange(e)} />
+                    </EuiFormRow>
+                    <EuiFormRow fullWidth label="Entity Hierarchy">
+                        <EuiFieldText fullWidth name="hiterarcy" value={groupKeys} onChange={e => handleInputChange(e)} />
                     </EuiFormRow>
                     <EuiFormRow fullWidth label="GeoFence">
                         <GeoFence ref="GeoFenceComponent" geoFenceCoords={geoFence} />
@@ -81,6 +85,7 @@ class Entities extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.removeGeoFence = this.removeGeoFence.bind(this);
+        console.log("This is read from the env file : " + process.env.REACT_APP_ENV_VAR1);
     }
 
     removeGeoFence(event) {
@@ -109,7 +114,7 @@ class Entities extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/entities/'.concat(this.state.id);
+        let thisurl = 'http://54.255.195.248:8111/api/v1/entities/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -136,17 +141,24 @@ class Entities extends Component {
             selectedBuildingBlock: buildingBlock
         });
         if (visibility) {
+            var groupKeysStr = "";
+            buildingBlock[ 'groupByKeys' ].map((key, index) => { 
+                if( index == 0 ) 
+                    groupKeysStr += key;
+                else 
+                    groupKeysStr += " --> " + key; });
             this.setState({
-                id: buildingBlockId,
+                id: buildingBlock['id'],
                 name: buildingBlock['name'],
                 description: buildingBlock['description'],
                 geoFence: buildingBlock['geoFence'],
+                groupKeys : groupKeysStr,
             });
         }
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
@@ -160,7 +172,7 @@ class Entities extends Component {
                 {cards(this.state.buildingBlocks, this.setFlyoutVisibility)}
                 {flyout(this.state.flyoutVisibility, this.setFlyoutVisibility,
                     this.handleInputChange, this.handleSubmit, this.state.id, this.state.name,
-                    this.state.description, this.state.geoFence, this.removeGeoFence)}
+                    this.state.description, this.state.geoFence, this.removeGeoFence, this.state.groupKeys)}
             </EuiFlexGroup>
         );
     }

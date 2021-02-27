@@ -107,7 +107,7 @@ class Simulator extends Component {
             method: 'POST',
             body: JSON.stringify(this.state.schema)
         };
-        let thisurl = 'http://localhost:8111/api/v1/getOffers';
+        let thisurl = 'http://54.255.195.248:8111/api/v1/getOffers';
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -184,7 +184,7 @@ class Simulator extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/events', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/events', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });

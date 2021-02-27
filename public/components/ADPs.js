@@ -145,7 +145,7 @@ class ADPs extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
+        let thisurl = 'http://54.255.195.248:8111/api/v1/adps/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -223,14 +223,14 @@ class ADPs extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/adps', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/adps', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
             })
             .catch(console.log);
 
-        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];
@@ -238,7 +238,7 @@ class ADPs extends Component {
                 this.setState({ entitiesList: options });
             })
             .catch(console.log)
-        fetch('http://localhost:8111/api/v1/events', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/events', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];

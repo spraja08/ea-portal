@@ -1,5 +1,200 @@
 (window["eaPortal_bundle_jsonpfunction"] = window["eaPortal_bundle_jsonpfunction"] || []).push([[0],{
 
+/***/ "../../node_modules/process/browser.js":
+/*!************************************************************************************!*\
+  !*** /Users/rspamzn/cloudLabs/dependencies/kibana/node_modules/process/browser.js ***!
+  \************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+
 /***/ "./public/application.tsx":
 /*!********************************!*\
   !*** ./public/application.tsx ***!
@@ -257,7 +452,7 @@ class ADPs extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://localhost:8111/api/v1/adps/'.concat(this.state.id);
+    let thisurl = 'http://54.255.195.248:8111/api/v1/adps/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -350,14 +545,14 @@ class ADPs extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/adps', {
+    fetch('http://54.255.195.248:8111/api/v1/adps', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
       });
     }).catch(console.log);
-    fetch('http://localhost:8111/api/v1/entities', {
+    fetch('http://54.255.195.248:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];
@@ -370,7 +565,7 @@ class ADPs extends _react.Component {
         entitiesList: options
       });
     }).catch(console.log);
-    fetch('http://localhost:8111/api/v1/events', {
+    fetch('http://54.255.195.248:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];
@@ -428,7 +623,7 @@ module.exports = exports.default;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(process) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -466,7 +661,7 @@ function cards(buildingBlocks, setFlyoutVisibility) {
   return cardNodes;
 }
 
-function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, geoFence, handleRemoveGeoFence) {
+function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleSubmit, id, name, description, geoFence, handleRemoveGeoFence, groupKeys) {
   let flyout;
 
   if (isFlyoutVisible) {
@@ -483,7 +678,7 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       id: "flyoutTitle"
     }, name))), _react.default.createElement(_eui.EuiFlyoutBody, null, _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
-      label: "ID"
+      label: "Id Field (from Events Schema)"
     }, _react.default.createElement(_eui.EuiFieldText, {
       fullWidth: true,
       name: "id",
@@ -504,6 +699,14 @@ function flyout(isFlyoutVisible, setFlyoutVisibility, handleInputChange, handleS
       fullWidth: true,
       name: "description",
       value: description,
+      onChange: e => handleInputChange(e)
+    })), _react.default.createElement(_eui.EuiFormRow, {
+      fullWidth: true,
+      label: "Entity Hierarchy"
+    }, _react.default.createElement(_eui.EuiFieldText, {
+      fullWidth: true,
+      name: "hiterarcy",
+      value: groupKeys,
       onChange: e => handleInputChange(e)
     })), _react.default.createElement(_eui.EuiFormRow, {
       fullWidth: true,
@@ -539,6 +742,7 @@ class Entities extends _react.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.removeGeoFence = this.removeGeoFence.bind(this);
+    console.log("This is read from the env file : " + process.env.REACT_APP_ENV_VAR1);
   }
 
   removeGeoFence(event) {
@@ -566,7 +770,7 @@ class Entities extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://localhost:8111/api/v1/entities/'.concat(this.state.id);
+    let thisurl = 'http://54.255.195.248:8111/api/v1/entities/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -595,17 +799,22 @@ class Entities extends _react.Component {
     });
 
     if (visibility) {
+      var groupKeysStr = "";
+      buildingBlock['groupByKeys'].map((key, index) => {
+        if (index == 0) groupKeysStr += key;else groupKeysStr += " --> " + key;
+      });
       this.setState({
-        id: buildingBlockId,
+        id: buildingBlock['id'],
         name: buildingBlock['name'],
         description: buildingBlock['description'],
-        geoFence: buildingBlock['geoFence']
+        geoFence: buildingBlock['geoFence'],
+        groupKeys: groupKeysStr
       });
     }
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/entities', {
+    fetch('http://54.255.195.248:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -618,7 +827,7 @@ class Entities extends _react.Component {
     return _react.default.createElement(_eui.EuiFlexGroup, {
       wrap: true,
       gutterSize: "l"
-    }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.description, this.state.geoFence, this.removeGeoFence));
+    }, cards(this.state.buildingBlocks, this.setFlyoutVisibility), flyout(this.state.flyoutVisibility, this.setFlyoutVisibility, this.handleInputChange, this.handleSubmit, this.state.id, this.state.name, this.state.description, this.state.geoFence, this.removeGeoFence, this.state.groupKeys));
   }
 
 }
@@ -626,6 +835,7 @@ class Entities extends _react.Component {
 var _default = Entities;
 exports.default = _default;
 module.exports = exports.default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../node_modules/process/browser.js */ "../../node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -735,7 +945,7 @@ class Events extends _react.Component {
       method: 'POST',
       body: JSON.stringify(this.state.schema)
     };
-    let thisurl = 'http://localhost:8111/api/v1/events/'.concat(this.state.id);
+    let thisurl = 'http://54.255.195.248:8111/api/v1/events/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -770,7 +980,7 @@ class Events extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/events', {
+    fetch('http://54.255.195.248:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -1127,7 +1337,7 @@ class Simulator extends _react.Component {
       method: 'POST',
       body: JSON.stringify(this.state.schema)
     };
-    let thisurl = 'http://localhost:8111/api/v1/getOffers';
+    let thisurl = 'http://54.255.195.248:8111/api/v1/getOffers';
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         entity360: data
@@ -1199,7 +1409,7 @@ class Simulator extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/events', {
+    fetch('http://54.255.195.248:8111/api/v1/events', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
@@ -1375,7 +1585,7 @@ class States extends _react.Component {
       method: 'POST',
       body: JSON.stringify(thisBuildingBlock)
     };
-    let thisurl = 'http://localhost:8111/api/v1/states/'.concat(this.state.id);
+    let thisurl = 'http://54.255.195.248:8111/api/v1/states/'.concat(this.state.id);
     fetch(thisurl, requestOptions).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
@@ -1433,14 +1643,14 @@ class States extends _react.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8111/api/v1/states', {
+    fetch('http://54.255.195.248:8111/api/v1/states', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       this.setState({
         buildingBlocks: data
       });
     }).catch(console.log);
-    fetch('http://localhost:8111/api/v1/entities', {
+    fetch('http://54.255.195.248:8111/api/v1/entities', {
       mode: 'cors'
     }).then(res => res.json()).then(data => {
       var options = [];

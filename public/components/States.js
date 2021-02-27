@@ -112,7 +112,7 @@ class States extends Component {
             method: 'POST',
             body: JSON.stringify(thisBuildingBlock)
         };
-        let thisurl = 'http://localhost:8111/api/v1/states/'.concat(this.state.id);
+        let thisurl = 'http://54.255.195.248:8111/api/v1/states/'.concat(this.state.id);
         fetch(thisurl, requestOptions)
             .then(res => res.json())
             .then((data) => {
@@ -163,14 +163,14 @@ class States extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8111/api/v1/states', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/states', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 this.setState({ buildingBlocks: data });
             })
             .catch(console.log);
 
-        fetch('http://localhost:8111/api/v1/entities', { mode: 'cors' })
+        fetch('http://54.255.195.248:8111/api/v1/entities', { mode: 'cors' })
             .then(res => res.json())
             .then((data) => {
                 var options = [];
