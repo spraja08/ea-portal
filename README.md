@@ -2,6 +2,8 @@
 
 > Entity Analytics Portal
 
+A kibana plugin reference implementation of a portal that allows data engineers to configure events, entities and analytical data points. The definitions will be notified to the backend flink application in a configuration stream using which the backend will self update itself.
+
 ---
 
 ## Development
